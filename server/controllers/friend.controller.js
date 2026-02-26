@@ -16,7 +16,9 @@ exports.sendFriendRequest = async (req, res) => {
     }
 
     if (currentUserId.toString() === targetUserId) {
-      return res.status(400).json({ message: "You cannot send a friend request to yourself" });
+      return res
+        .status(400)
+        .json({ message: "You cannot send a friend request to yourself" });
     }
 
     const targetUser = await UserModel.findById(targetUserId);
@@ -26,7 +28,9 @@ exports.sendFriendRequest = async (req, res) => {
 
     const currentUser = await UserModel.findById(currentUserId);
     if (currentUser.friends.includes(targetUserId)) {
-      return res.status(400).json({ message: "Already friends with this user" });
+      return res
+        .status(400)
+        .json({ message: "Already friends with this user" });
     }
 
     let friendRequest = await FriendRequestModel.findOne({
@@ -97,7 +101,9 @@ exports.acceptFriendRequest = async (req, res) => {
     });
 
     if (!friendRequest) {
-      return res.status(404).json({ message: "Friend request not found or already processed" });
+      return res
+        .status(404)
+        .json({ message: "Friend request not found or already processed" });
     }
 
     friendRequest.status = "accepted";
@@ -134,7 +140,9 @@ exports.rejectFriendRequest = async (req, res) => {
     });
 
     if (!friendRequest) {
-      return res.status(404).json({ message: "Friend request not found or already processed" });
+      return res
+        .status(404)
+        .json({ message: "Friend request not found or already processed" });
     }
 
     friendRequest.status = "rejected";
@@ -198,7 +206,7 @@ exports.checkFriendship = async (req, res) => {
   try {
     const currentUser = await UserModel.findById(req.user._id);
     const isFriend = currentUser.friends.some(
-      (id) => id.toString() === req.params.userId
+      (id) => id.toString() === req.params.userId,
     );
     res.status(200).json({ isFriend });
   } catch (error) {

@@ -4,8 +4,8 @@ const MessageSchema = new Schema(
   {
     text: { type: String },
     file: { type: String },
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    recipient: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    recipientId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

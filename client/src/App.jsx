@@ -1,38 +1,42 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Home from './pages/Home';
-import Logout from './pages/Logout';
-import Settings from './pages/Settings';
-import Profile from './pages/Profile';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { useEffect } from "react";
+import { Loader } from "lucide-react";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+import Chat from "./pages/Chat";
+import Logout from "./pages/Logout";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import { useAuthStore } from "./store/useAuthStore";
 
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
-  if (loading) {
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-base-100 flex items-center justify-center" >
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
   }
-  if (!user) {
+  if (!authUser) {
     return <Navigate to="/login" replace />;
   }
   return children;
 }
 
 function PublicRoute({ children }) {
-  const { user, loading } = useAuth();
-  if (loading) {
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-base-100 flex items-center justify-center" >
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
   }
-  if (user) {
+  if (authUser) {
     return <Navigate to="/" replace />;
   }
   return children;
@@ -82,6 +86,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <Chat />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/profile"
         element={
           <ProtectedRoute>
@@ -95,6 +107,18 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+  if (isCheckingAuth && !authUser) {
+    return (
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        {" "}
+        <Loader className="size-10 animate-spin" />
+      </div>
+    );
+  }
   return (
     <BrowserRouter>
       <AuthProvider>

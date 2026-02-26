@@ -6,17 +6,11 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const userRouter = require("./routers/user.router");
 const cookieParser = require("cookie-parser");
-
 dotenv.config();
+const { app, server } = require("./lib/socket");
+const messageRouter = require("./routers/message.router");
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: process.env.BASE_URL || "http://localhost:5173",
-    credentials: true,
-  },
-});
+// io is configured in lib/socket.js
 const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 const MONGODB = process.env.MONGODB;
@@ -52,21 +46,7 @@ if (!MONGODB) {
 }
 //use router
 app.use("/api/v1/user", userRouter);
-
-// Socket.io
-const onlineUsers = new Map();
-io.on("connection", (socket) => {
-  socket.on("user:online", (data) => {
-    if (data?.userId) {
-      onlineUsers.set(socket.id, data.userId);
-      io.emit("users:online", Array.from(onlineUsers.values()));
-    }
-  });
-  socket.on("disconnect", () => {
-    onlineUsers.delete(socket.id);
-    io.emit("users:online", Array.from(onlineUsers.values()));
-  });
-});
+app.use("/api/v1/message", messageRouter);
 
 server.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);

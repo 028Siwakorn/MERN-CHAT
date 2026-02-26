@@ -5,6 +5,8 @@ require("dotenv").config();
 const secret = process.env.SECRET_KEY;
 const node_mode = process.env.node_mode;
 const cloudinary = require("../configs/cloudinary");
+
+
 exports.register = async (req, res) => {
   const { fullname, email, password } = req.body;
   if (!fullname || !email || !password) {
@@ -242,7 +244,9 @@ exports.searchUsers = async (req, res) => {
   try {
     const { q } = req.query;
     if (!q || q.length < 2) {
-      return res.status(400).json({ message: "Search query must be at least 2 characters" });
+      return res
+        .status(400)
+        .json({ message: "Search query must be at least 2 characters" });
     }
 
     const currentUserId = req.user._id;
@@ -250,10 +254,7 @@ exports.searchUsers = async (req, res) => {
 
     const users = await UserModel.find({
       _id: { $ne: currentUserId },
-      $or: [
-        { fullname: { $regex: regex } },
-        { email: { $regex: regex } },
-      ],
+      $or: [{ fullname: { $regex: regex } }, { email: { $regex: regex } }],
     })
       .select("fullname email profilePicture")
       .limit(20)
@@ -282,7 +283,7 @@ exports.updateTheme = async (req, res) => {
     const updatedUser = await UserModel.findByIdAndUpdate(
       req.user._id,
       { theme },
-      { new: true }
+      { new: true },
     ).select("-password");
 
     res.status(200).json({

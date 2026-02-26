@@ -1,20 +1,20 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import { api } from '../lib/api';
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
+import { api } from "../lib/utils";
 
 const ThemeContext = createContext(null);
 
-const THEME_STORAGE_KEY = 'sechat-theme';
+const THEME_STORAGE_KEY = "sechat-theme";
 
 export function ThemeProvider({ children }) {
   const { user } = useAuth();
   const [theme, setThemeState] = useState(() => {
-    return localStorage.getItem(THEME_STORAGE_KEY) || 'sechat';
+    return localStorage.getItem(THEME_STORAGE_KEY) || "sechat";
   });
 
   useEffect(() => {
     const root = document.documentElement;
-    root.setAttribute('data-theme', theme);
+    root.setAttribute("data-theme", theme);
   }, [theme]);
 
   const setTheme = async (newTheme) => {
@@ -22,7 +22,7 @@ export function ThemeProvider({ children }) {
     localStorage.setItem(THEME_STORAGE_KEY, newTheme);
     if (user) {
       try {
-        await api.put('/user/theme', { theme: newTheme });
+        await api.put("/user/theme", { theme: newTheme });
       } catch {
         // Silently fail - theme is saved locally
       }
@@ -46,7 +46,7 @@ export function ThemeProvider({ children }) {
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
+    throw new Error("useTheme must be used within ThemeProvider");
   }
   return context;
 }

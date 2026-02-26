@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useChatStore } from '../stores/useChatStore';
+import { useChatStore } from '../store/useChatStore';
 import { useSocket } from '../hooks/useSocket';
 import Layout from '../components/Layout';
 import ChatBubbleIcon from '../components/ChatBubbleIcon';
